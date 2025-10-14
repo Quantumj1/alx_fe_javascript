@@ -1,4 +1,4 @@
-// Array of quote objects, each with text and category
+x// Array of quote objects, each with text and category
 let quotes = [];
 let syncInterval;
 
@@ -96,7 +96,7 @@ async function syncQuotes() {
       quotes = [...quotes, ...newServerQuotes];
       saveQuotesToLocalStorage();
       populateCategories();
-      showNotification(`Synced ${newServerQuotes.length} new quotes from server.`);
+      showNotification('Quotes synced with server!');
     } else {
       showNotification('Data is up to date.');
     }
