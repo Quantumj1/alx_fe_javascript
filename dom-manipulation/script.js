@@ -84,8 +84,8 @@ async function postQuoteToServer(quote) {
   }
 }
 
-// Function to sync data with server
-async function syncData() {
+// Function to sync quotes with server
+async function syncQuotes() {
   const serverQuotes = await fetchQuotesFromServer();
   if (serverQuotes.length > 0) {
     // Simple conflict resolution: server data takes precedence
@@ -224,6 +224,10 @@ function setupAddQuoteForm() {
   // Set up import input
   const importInput = document.getElementById('importQuotes');
   importInput.addEventListener('change', importQuotesFromJSON);
+
+  // Set up sync button
+  const syncButton = document.getElementById('syncQuotes');
+  syncButton.addEventListener('click', syncQuotes);
 }
 
 // Event listener for the newQuote button
@@ -237,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
   showRandomQuote(); // Show an initial random quote
 
   // Start periodic sync with server (every 30 seconds)
-  syncInterval = setInterval(syncData, 30000);
+  syncInterval = setInterval(syncQuotes, 30000);
   // Initial sync
-  syncData();
+  syncQuotes();
 });
