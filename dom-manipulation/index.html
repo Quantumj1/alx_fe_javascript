@@ -10,7 +10,22 @@
     <h1>Dynamic Quote Generator</h1>
     <div id="quoteDisplay"></div>
     <button id="newQuote">Show New Quote</button>
-    
+
+    <form id="addQuoteForm">
+      <label for="quoteText">Quote Text:</label>
+      <textarea id="quoteText" required></textarea>
+
+      <label for="quoteCategory">Category:</label>
+      <input type="text" id="quoteCategory" required>
+
+      <button type="submit">Add Quote</button>
+
+      <button type="button" id="exportQuotes">Export Quotes to JSON</button>
+
+      <label for="importQuotes">Import Quotes from JSON:</label>
+      <input type="file" id="importQuotes" accept=".json">
+    </form>
+
     <script src="script.js"></script>
   </body>
   </html>

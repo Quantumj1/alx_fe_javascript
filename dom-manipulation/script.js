@@ -67,37 +67,15 @@ function showRandomQuote() {
   quoteDisplay.innerHTML = `<p>"${quote.text}"</p><p><em>Category: ${quote.category}</em></p>`;
 }
 
-// Function to create and append the add quote form
-function createAddQuoteForm() {
-  const form = document.createElement('form');
-  form.id = 'addQuoteForm';
-
-  const textLabel = document.createElement('label');
-  textLabel.textContent = 'Quote Text:';
-  const textArea = document.createElement('textarea');
-  textArea.id = 'quoteText';
-  textArea.required = true;
-
-  const categoryLabel = document.createElement('label');
-  categoryLabel.textContent = 'Category:';
-  const categoryInput = document.createElement('input');
-  categoryInput.type = 'text';
-  categoryInput.id = 'quoteCategory';
-  categoryInput.required = true;
-
-  const submitButton = document.createElement('button');
-  submitButton.type = 'submit';
-  submitButton.textContent = 'Add Quote';
-
-  form.appendChild(textLabel);
-  form.appendChild(textArea);
-  form.appendChild(categoryLabel);
-  form.appendChild(categoryInput);
-  form.appendChild(submitButton);
+// Function to set up the add quote form (now static in HTML)
+function setupAddQuoteForm() {
+  const form = document.getElementById('addQuoteForm');
 
   // Event listener for form submission
   form.addEventListener('submit', function(event) {
     event.preventDefault();
+    const textArea = document.getElementById('quoteText');
+    const categoryInput = document.getElementById('quoteCategory');
     const newQuoteText = textArea.value.trim();
     const newQuoteCategory = categoryInput.value.trim();
     if (newQuoteText && newQuoteCategory) {
@@ -109,28 +87,13 @@ function createAddQuoteForm() {
     }
   });
 
-  // Create export button
-  const exportButton = document.createElement('button');
-  exportButton.type = 'button';
-  exportButton.textContent = 'Export Quotes to JSON';
+  // Set up export button
+  const exportButton = document.getElementById('exportQuotes');
   exportButton.addEventListener('click', exportQuotesToJSON);
 
-  // Create import input and label
-  const importLabel = document.createElement('label');
-  importLabel.textContent = 'Import Quotes from JSON:';
-  const importInput = document.createElement('input');
-  importInput.type = 'file';
-  importInput.accept = '.json';
+  // Set up import input
+  const importInput = document.getElementById('importQuotes');
   importInput.addEventListener('change', importQuotesFromJSON);
-
-  // Append elements
-  form.appendChild(exportButton);
-  form.appendChild(importLabel);
-  form.appendChild(importInput);
-
-  // Append the form after the newQuote button
-  const newQuoteButton = document.getElementById('newQuote');
-  newQuoteButton.parentNode.insertBefore(form, newQuoteButton.nextSibling);
 }
 
 // Event listener for the newQuote button
@@ -139,6 +102,6 @@ document.getElementById('newQuote').addEventListener('click', showRandomQuote);
 // Initialize the page
 document.addEventListener('DOMContentLoaded', function() {
   loadQuotesFromLocalStorage(); // Load quotes from local storage on initialization
-  createAddQuoteForm();
+  setupAddQuoteForm();
   showRandomQuote(); // Show an initial random quote
 });
