@@ -1,5 +1,6 @@
 // Array of quote objects, each with text and category
 let quotes = [];
+let syncInterval;
 
 // Function to save quotes to local storage
 function saveQuotesToLocalStorage() {
@@ -33,6 +34,73 @@ function exportQuotesToJSON() {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+}
+
+// Function to show notification
+function showNotification(message) {
+  const notificationDiv = document.getElementById('notification');
+  notificationDiv.textContent = message;
+  notificationDiv.style.display = 'block';
+  setTimeout(() => {
+    notificationDiv.style.display = 'none';
+  }, 5000); // Hide after 5 seconds
+}
+
+// Function to fetch quotes from server (simulated)
+async function fetchQuotesFromServer() {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+    const serverQuotes = await response.json();
+    // Transform server data to match our quote format (using title as text, body as category or default)
+    return serverQuotes.slice(0, 10).map(post => ({
+      text: post.title,
+      category: 'Server' // Default category for server quotes
+    }));
+  } catch (error) {
+    console.error('Error fetching from server:', error);
+    return [];
+  }
+}
+
+// Function to post quote to server (simulated)
+async function postQuoteToServer(quote) {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+      method: 'POST',
+      body: JSON.stringify({
+        title: quote.text,
+        body: quote.category,
+        userId: 1
+      }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    });
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Error posting to server:', error);
+    return null;
+  }
+}
+
+// Function to sync data with server
+async function syncData() {
+  const serverQuotes = await fetchQuotesFromServer();
+  if (serverQuotes.length > 0) {
+    // Simple conflict resolution: server data takes precedence
+    // Merge server quotes with local quotes, avoiding duplicates
+    const existingTexts = new Set(quotes.map(q => q.text));
+    const newServerQuotes = serverQuotes.filter(q => !existingTexts.has(q.text));
+    if (newServerQuotes.length > 0) {
+      quotes = [...quotes, ...newServerQuotes];
+      saveQuotesToLocalStorage();
+      populateCategories();
+      showNotification(`Synced ${newServerQuotes.length} new quotes from server.`);
+    } else {
+      showNotification('Data is up to date.');
+    }
+  }
 }
 
 // Function to import quotes from JSON file
@@ -124,19 +192,28 @@ function setupAddQuoteForm() {
   const form = document.getElementById('addQuoteForm');
 
   // Event listener for form submission
-  form.addEventListener('submit', function(event) {
+  form.addEventListener('submit', async function(event) {
     event.preventDefault();
     const textArea = document.getElementById('quoteText');
     const categoryInput = document.getElementById('quoteCategory');
     const newQuoteText = textArea.value.trim();
     const newQuoteCategory = categoryInput.value.trim();
     if (newQuoteText && newQuoteCategory) {
-      quotes.push({ text: newQuoteText, category: newQuoteCategory });
+      const newQuote = { text: newQuoteText, category: newQuoteCategory };
+      quotes.push(newQuote);
       saveQuotesToLocalStorage(); // Save to local storage after adding
       populateCategories(); // Update the category filter with new category
       textArea.value = '';
       categoryInput.value = '';
       alert('Quote added successfully!');
+
+      // Post to server asynchronously
+      const serverResponse = await postQuoteToServer(newQuote);
+      if (serverResponse) {
+        showNotification('Quote synced to server.');
+      } else {
+        showNotification('Failed to sync quote to server.');
+      }
     }
   });
 
@@ -158,4 +235,9 @@ document.addEventListener('DOMContentLoaded', function() {
   populateCategories(); // Populate the category filter dropdown
   setupAddQuoteForm();
   showRandomQuote(); // Show an initial random quote
+
+  // Start periodic sync with server (every 30 seconds)
+  syncInterval = setInterval(syncData, 30000);
+  // Initial sync
+  syncData();
 });
