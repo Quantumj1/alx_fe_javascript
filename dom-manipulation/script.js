@@ -187,7 +187,70 @@ function filterQuotes() {
   showRandomQuote();
 }
 
-// Function to set up the add quote form (now static in HTML)
+// Function to create the add quote form dynamically
+function createAddQuoteForm() {
+  const form = document.createElement('form');
+  form.id = 'addQuoteForm';
+
+  // Quote Text label and textarea
+  const textLabel = document.createElement('label');
+  textLabel.setAttribute('for', 'quoteText');
+  textLabel.textContent = 'Quote Text:';
+  const textArea = document.createElement('textarea');
+  textArea.id = 'quoteText';
+  textArea.required = true;
+
+  // Category label and input
+  const categoryLabel = document.createElement('label');
+  categoryLabel.setAttribute('for', 'quoteCategory');
+  categoryLabel.textContent = 'Category:';
+  const categoryInput = document.createElement('input');
+  categoryInput.type = 'text';
+  categoryInput.id = 'quoteCategory';
+  categoryInput.required = true;
+
+  // Submit button
+  const submitButton = document.createElement('button');
+  submitButton.type = 'submit';
+  submitButton.textContent = 'Add Quote';
+
+  // Export button
+  const exportButton = document.createElement('button');
+  exportButton.type = 'button';
+  exportButton.id = 'exportQuotes';
+  exportButton.textContent = 'Export Quotes to JSON';
+
+  // Import label and input
+  const importLabel = document.createElement('label');
+  importLabel.setAttribute('for', 'importQuotes');
+  importLabel.textContent = 'Import Quotes from JSON:';
+  const importInput = document.createElement('input');
+  importInput.type = 'file';
+  importInput.id = 'importQuotes';
+  importInput.accept = '.json';
+
+  // Sync button
+  const syncButton = document.createElement('button');
+  syncButton.type = 'button';
+  syncButton.id = 'syncQuotes';
+  syncButton.textContent = 'Sync Quotes with Server';
+
+  // Append elements to form
+  form.appendChild(textLabel);
+  form.appendChild(textArea);
+  form.appendChild(categoryLabel);
+  form.appendChild(categoryInput);
+  form.appendChild(submitButton);
+  form.appendChild(exportButton);
+  form.appendChild(importLabel);
+  form.appendChild(importInput);
+  form.appendChild(syncButton);
+
+  // Append form to body (or a specific container)
+  document.body.appendChild(form);
+}
+
+// Function to set up the add quote form
 function setupAddQuoteForm() {
   const form = document.getElementById('addQuoteForm');
 
@@ -237,6 +300,7 @@ document.getElementById('newQuote').addEventListener('click', showRandomQuote);
 document.addEventListener('DOMContentLoaded', function() {
   loadQuotesFromLocalStorage(); // Load quotes from local storage on initialization
   populateCategories(); // Populate the category filter dropdown
+  createAddQuoteForm(); // Create the add quote form dynamically
   setupAddQuoteForm();
   showRandomQuote(); // Show an initial random quote
 
